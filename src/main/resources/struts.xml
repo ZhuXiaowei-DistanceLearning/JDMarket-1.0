@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+    <constant name="struts.devMode" value="true"/>
+    <constant name="struts.objectFactory" value="spring"/>
+    <constant name="struts.multipart.maxSize" value="1000000"/>
+    <constant name="struts.custom.i18n.resources" value="message"></constant>
+    <!--	name		：包的名称，只有在一个项目中不重名即可。
+        	extends		：继承哪个包，通常值为struts-default。
+        	namespace	：名称空间，与<action>标签中的name属性共同决定访问路径。
+        	名称空间有三种写法：
+        	带名称的名称空间		：namespace=”/aaa”
+        	跟名称空间			：namespance=”/”
+        	默认名称空间			：namespace=””
+        	abstract		：抽象的，用于其他包的继承。
+-->
+    <package extends="struts-default" name="zxw" namespace="/">
+        <interceptors>
+            <interceptor name="myFilter" class="com.zxw.filter.MyFilter"></interceptor>
+            <interceptor-stack name="myDefaultStack">
+                <interceptor-ref name="myFilter"></interceptor-ref>
+                <interceptor-ref name="defaultStack"></interceptor-ref>
+                <interceptor-ref name="params"/>
+                <interceptor-ref name="fileUpload">
+                    <param name="allowedTypes">image/jpeg,image/gif</param>
+                </interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="myDefaultStack"></default-interceptor-ref>
+        <!-- <global-results>
+             <result name="inedx">WEB-INF/index.jsp
+             <result>
+         </global-results>-->
+        <!--	name		：与namespace共同决定访问路径
+        	class			：Action类的全路径
+        	method		：执行Action中的哪个方法的方法名，默认值execute
+        	converter		：用于设置类型转换器
+-->
+        <action name="goods_*" class="goodsController" method="{1}">
+            <result name="homeGoods">/WEB-INF/pages/goods/homeGoods.jsp</result>
+            <!--发布物品-->
+            <result name="publishGoods">user_queryBySellProduct.action</result>
+            <!--更改商品信息-->
+            <result name="goodsDown">user_queryBySellProduct.action</result>
+            <!--修改商品页面-->
+            <result name="editGoods">/WEB-INF/pages/goods/editGoods.jsp</result>
+            <!--商品信息详情页面-->
+            <result name="goodInfo">/WEB-INF/pages/goods/detailGoods.jsp</result>
+            <!--订单详情信息-->
+            <result name="buy">/WEB-INF/pages/user/pay.jsp</result>
+            <result name="goodsList">/WEB-INF/pages/admin/goods/goods_list.jsp</result>
+        </action>
+        <action name="user_*" class="userController" method="{1}">
+            <result name="success" type="redirect">goods_homeGoods.action</result>
+            <!--登录成功-->
+            <result name="login" type="redirect">goods_homeGoods.action</result>
+            <!--我的闲置-->
+            <result name="sellProductByUser" type="dispatcher">page_user_goods.action</result>
+            <!--关注列表-->
+            <result name="focus">/WEB-INF/pages/user/focus.jsp</result>
+            <!--个人设置-->
+            <result name="basic">/WEB-INF/pages/user/basic.jsp</result>
+            <!--修改个人信息-->
+            <result name="updateUserInfo" type="redirect">user_basic.action</result>
+        </action>
+        <action name="purse_*" class="purseController" method="{1}">
+            <!--用户余额-->
+            <result name="money">/WEB-INF/pages/user/purse.jsp</result>
+            <!--充值-->
+            <result name="updatePurse" type="redirect">purse_getMoney.action</result>
+            <!--钱包列表-->
+            <result name="purseList">/WEB-INF/pages/admin/purse/purse_list.jsp</result>
+        </action>
+        <action name="orders_*" class="ordersController" method="{1}">
+            <!--订单中心-->
+            <result name="myOrders">/WEB-INF/pages/user/orders.jsp</result>
+            <!--添加订单-->
+            <result name="addOrder">orders_myOrders.action</result>
+            <!--更新商品信息-->
+            <result name="updateGoodsInfo">orders_myOrders.action</result>
+            <!--商品列表-->
+            <result name="ordersList">/WEB-INF/pages/admin/orders/orders_list.jsp</result>
+        </action>
+        <action name="focus_*" class="focusController" method="{1}">
+            <!--删除购物车-->
+            <result name="clearCart">user_cart.action</result>
+            <!--添加购物车-->
+            <result name="addCart">user_cart.action</result>
+        </action>
+        <action name="admin_*" class="adminController" method="{1}">
+            <!--成功-->
+            <result name="success">/WEB-INF/pages/admin/index.jsp</result>
+            <!--退出-->
+            <result name="logout">/WEB-INF/pages/admin/login.jsp</result>
+            <!--用户列表-->
+            <result name="userList">/WEB-INF/pages/admin/user/user_list.jsp</result>
+        </action>
+        <action name="page_*_*">
+            <result name="success" type="dispatcher">/WEB-INF/pages/{1}/{2}.jsp</result>
+        </action>
+        <!--&lt;!&ndash;        <action name="specialtyAction_*" class="specialtyAction" method="{1}">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">/WEB-INF/pages/base/specialty.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+        <!--&lt;!&ndash;        <action name="classesAction_*" class="classesAction" method="{1}">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">/WEB-INF/pages/base/classes.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="page">/WEB-INF/pages/base/studentInfo.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+        <!--&lt;!&ndash;        <action name="studentAction_*" class="studentAction" method="{1}">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">/WEB-INF/pages/base/studentInfo.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="teacherlist">/WEB-INF/pages/teacher/course.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="studentInfo">/WEB-INF/pages/base/studentInfo.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+        <!--&lt;!&ndash;        <action name="teacherAction_*" class="teacherAction" method="{1}">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">/WEB-INF/pages/base/teacher.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+        <!--&lt;!&ndash;        <action name="courseAction_*" class="courseAction" method="{1}">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">/WEB-INF/pages/base/course.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="page">/WEB-INF/pages/teacher/score.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+        <!--&lt;!&ndash;        <action name="weekAction_*" class="weekAction" method="{1}">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">/WEB-INF/pages/base/teacher.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+        <!--&lt;!&ndash;        <action name="sectionAction_*" class="sectionAction" method="{1}">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">/WEB-INF/pages/base/teacher.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+        <!--&lt;!&ndash;        <action name="loginAction" class="loginAction" method="login">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">index.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+
+        <!--&lt;!&ndash;        <action name="functionAction_*" class="functionAction" method="{1}">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">/WEB-INF/pages/admin/function.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+
+        <!--&lt;!&ndash;        <action name="roleAction_*" class="roleAction" method="{1}">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">/WEB-INF/pages/admin/role.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+        <!--&lt;!&ndash;        <action name="natureAction_*" class="natureAction" method="{1}">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">/WEB-INF/pages/admin/role.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+        <!--&lt;!&ndash;        <action name="scoreAction_*" class="scoreAction" method="{1}">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="list">/WEB-INF/pages/student/course.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="score">/WEB-INF/pages/teacher/score.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="findCourse">/WEB-INF/pages/student/schedule.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+        <!--&lt;!&ndash;        <action name="page_*_*">&ndash;&gt;-->
+        <!--&lt;!&ndash;            <result name="success" type="dispatcher">/WEB-INF/pages/{1}/{2}.jsp</result>&ndash;&gt;-->
+        <!--&lt;!&ndash;        </action>&ndash;&gt;-->
+    </package>
+</struts>
